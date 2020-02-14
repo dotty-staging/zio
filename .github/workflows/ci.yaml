@@ -1,0 +1,37 @@
+name: Dotty CI
+
+on: [push, pull_request]
+
+jobs:
+  community_build:
+    runs-on: ubuntu-latest
+    container: akmetiuk/dotty:2020-02-12
+
+    steps:
+      - name: Git Checkout
+        uses: actions/checkout@v2
+
+      - name: Cache Ivy
+        uses: actions/cache@v1.1.2
+        with:
+          path: /root/.ivy2/cache
+          key: ${{ runner.os }}-ivy-${{ hashFiles('**/build.sbt') }}
+          restore-keys: ${{ runner.os }}-ivy-
+
+      - name: Cache SBT
+        uses: actions/cache@v1.1.2
+        with:
+          path: /root/.sbt
+          key: ${{ runner.os }}-sbt-${{ hashFiles('project/**') }}
+          restore-keys: ${{ runner.os }}-sbt-
+
+      - name: Cache Coursier and Mill
+        uses: actions/cache@v1.1.2
+        with:
+          path: /root/.cache
+          key: ${{ runner.os }}-general-${{ hashFiles('**/build.sbt') }}
+          restore-keys: ${{ runner.os }}-general-
+
+      #;;;testTestsJVM/test;testRunnerJVM/test:run;examplesJVM/test:compile
+      - name: Test
+        run: sbt streamsTestsJVM/test
