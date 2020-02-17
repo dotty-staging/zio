@@ -54,47 +54,5 @@ object StreamChunkSpec extends ZIOBaseSpec {
         } yield assert(res1)(equalTo(res2))
       }
     },
-    testM("StreamChunk.mapAccum") {
-      checkM(chunksOfInts) { s =>
-        for {
-          res1 <- slurp(s.mapAccum(0)((acc, el) => (acc + el, acc + el)))
-          res2 <- slurp(s).map(_.scanLeft(0)((acc, el) => acc + el).drop(1))
-        } yield assert(res1)(equalTo(res2))
-      }
-    },
-    suite("StreamChunk.mapAccumM")(
-      testM("mapAccumM happy path") {
-        checkM(chunksOfInts) { s =>
-          for {
-            res1 <- slurp(s.mapAccumM(0)((acc, el) => UIO.succeedNow((acc + el, acc + el))))
-            res2 <- slurp(s).map(_.scanLeft(0)((acc, el) => acc + el).drop(1))
-          } yield assert(res1)(equalTo(res2))
-        }
-      },
-      testM("mapAccumM error") {
-        StreamChunk
-          .fromChunks(Chunk(1), Chunk(2, 3), Chunk.empty)
-          .mapAccumM(0)((_, _) => IO.failNow("Ouch"))
-          .run(Sink.drain)
-          .either
-          .map(assert(_)(isLeft(equalTo("Ouch"))))
-      }
-    ),
-    testM("StreamChunk.mapM") {
-      checkM(chunksOfInts, Gen.function[Random, Int, Int](intGen)) { (s, f) =>
-        for {
-          res1 <- slurp(s.mapM(a => IO.succeedNow(f(a))))
-          res2 <- slurp(s).map(_.map(f))
-        } yield assert(res1)(equalTo(res2))
-      }
-    },
-    testM("StreamChunk.++") {
-      checkM(chunksOfInts, chunksOfInts) { (s1, s2) =>
-        for {
-          res1 <- slurp(s1).zipWith(slurp(s2))(_ ++ _)
-          res2 <- slurp(s1 ++ s2)
-        } yield assert(res1)(equalTo(res2))
-      }
-    },
   )
 }
