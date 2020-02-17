@@ -46,13 +46,13 @@ object StreamChunkSpec extends ZIOBaseSpec {
     //     .either
     //     .map(assert(_)(isLeft(equalTo(123))))
     // },
-    // testM("StreamChunk.drop") {
-    //   checkM(chunksOfInts, intGen) { (s, n) =>
-    //     for {
-    //       res1 <- slurp(s.drop(n))
-    //       res2 <- slurp(s).map(_.drop(n))
-    //     } yield assert(res1)(equalTo(res2))
-    //   }
-    // },
+    testM("StreamChunk.drop") {
+      checkM(chunksOfInts, intGen) { (s, n) =>
+        for {
+          res1 <- slurp(s.drop(n))
+          res2 <- slurp(s).map(_.drop(n))
+        } yield assert(res1)(equalTo(res2))
+      }
+    },
   )
 }
