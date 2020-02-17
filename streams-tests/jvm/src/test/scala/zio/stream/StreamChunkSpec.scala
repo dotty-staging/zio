@@ -14,15 +14,15 @@ object StreamChunkSpec extends ZIOBaseSpec {
 
   def spec = suite("StreamChunkSpec")(
     // suite("StreamChunk.mapConcatM")(
-    //   testM("mapConcatM happy path") {
-    //     val fn = Gen.function[Random with Sized, Int, Iterable[Int]](Gen.listOf(intGen))
-    //     checkM(pureStreamChunkGen(tinyChunks(intGen)), fn) { (s, f) =>
-    //       for {
-    //         res1 <- slurp(s.mapConcatM(s => UIO.succeedNow(f(s))))
-    //         res2 <- slurp(s).map(_.flatMap(s => f(s).toSeq))
-    //       } yield assert(res1)(equalTo(res2))
-    //     }
-    //   },
+      testM("mapConcatM happy path") {
+        val fn = Gen.function[Random with Sized, Int, Iterable[Int]](Gen.listOf(intGen))
+        checkM(pureStreamChunkGen(tinyChunks(intGen)), fn) { (s, f) =>
+          for {
+            res1 <- slurp(s.mapConcatM(s => UIO.succeedNow(f(s))))
+            res2 <- slurp(s).map(_.flatMap(s => f(s).toSeq))
+          } yield assert(res1)(equalTo(res2))
+        }
+      },
     //   testM("mapConcatM error") {
     //     StreamChunk
     //       .succeedNow(Chunk.single(1))
