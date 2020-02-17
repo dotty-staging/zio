@@ -39,13 +39,13 @@ object StreamChunkSpec extends ZIOBaseSpec {
     //     .either
     //     .map(assert(_)(isLeft(equalTo(123))))
     // },
-    // testM("StreamChunk.mapErrorCause") {
-    //   StreamChunk(Stream.haltNow(Cause.fail("123")))
-    //     .mapErrorCause(_.map(_.toInt))
-    //     .run(Sink.drain)
-    //     .either
-    //     .map(assert(_)(isLeft(equalTo(123))))
-    // },
+    testM("StreamChunk.mapErrorCause") {
+      StreamChunk(Stream.haltNow(Cause.fail("123")))
+        .mapErrorCause(_.map(_.toInt))
+        .run(Sink.drain)
+        .either
+        .map(assert(_)(isLeft(equalTo(123))))
+    },
     // testM("StreamChunk.drop") {
     //   checkM(chunksOfInts, intGen) { (s, n) =>
     //     for {
