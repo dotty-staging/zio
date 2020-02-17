@@ -23,14 +23,14 @@ object StreamChunkSpec extends ZIOBaseSpec {
     //       } yield assert(res1)(equalTo(res2))
     //     }
     //   },
-    //   testM("mapConcatM error") {
-    //     StreamChunk
-    //       .succeedNow(Chunk.single(1))
-    //       .mapConcatM(_ => IO.failNow("Ouch"))
-    //       .run(Sink.drain)
-    //       .either
-    //       .map(assert(_)(equalTo(Left("Ouch"))))
-    //   }
+      testM("mapConcatM error") {
+        StreamChunk
+          .succeedNow(Chunk.single(1))
+          .mapConcatM(_ => IO.failNow("Ouch"))
+          .run(Sink.drain)
+          .either
+          .map(assert(_)(equalTo(Left("Ouch"))))
+      }
     // ),
     // testM("StreamChunk.mapError") {
     //   StreamChunk(Stream.failNow("123"))
