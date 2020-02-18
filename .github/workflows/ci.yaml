@@ -32,6 +32,5 @@ jobs:
           key: ${{ runner.os }}-general-${{ hashFiles('**/build.sbt') }}
           restore-keys: ${{ runner.os }}-general-
 
-      #;;;testTestsJVM/test;testRunnerJVM/test:run;examplesJVM/test:compile
       - name: Test
-        run: sbt streamsTestsJVM/test
+        run: sbt testJVMDotty
