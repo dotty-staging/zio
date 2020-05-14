@@ -599,7 +599,7 @@ final class ZSTM[-R, +E, +A] private[stm] (
     implicit ev: A <:< Option[B],
     ev2: NoSuchElementException <:< E1
   ): ZSTM[R, E1, B] =
-    foldM(
+    foldM[R, E1, B](
       ZSTM.failNow,
       _.fold[ZSTM[R, E1, B]](ZSTM.failNow(ev2(new NoSuchElementException("None.get"))))(ZSTM.succeedNow)
     )
