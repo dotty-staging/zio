@@ -4,7 +4,6 @@ import explicitdeps.ExplicitDepsPlugin.autoImport._
 import sbtcrossproject.CrossPlugin.autoImport._
 import org.portablescala.sbtplatformdeps.PlatformDepsPlugin.autoImport._
 import sbtbuildinfo._
-import dotty.tools.sbtplugin.DottyPlugin.autoImport._
 import BuildInfoKeys._
 import scalafix.sbt.ScalafixPlugin.autoImport._
 
@@ -49,6 +48,8 @@ object BuildHelper {
       )
     else Nil
 
+  val isDotty = settingKey[Boolean]("")
+  
   def buildInfoSettings(packageName: String) =
     Seq(
       buildInfoKeys := Seq[BuildInfoKey](organization, moduleName, name, version, scalaVersion, sbtVersion, isSnapshot),
@@ -56,6 +57,7 @@ object BuildHelper {
     )
 
   val dottySettings = Seq(
+    isDotty := scalaVersion.value.startsWith("3"),
     crossScalaVersions += ScalaDotty,
     scalacOptions ++= {
       if (isDotty.value)
@@ -220,17 +222,17 @@ object BuildHelper {
       )
     }
   )
-
+  
   def stdSettings(prjName: String) = Seq(
     name := s"$prjName",
     crossScalaVersions := Seq(Scala211, Scala212, Scala213),
     scalaVersion in ThisBuild := Scala212,
+    isDotty := scalaVersion.value.startsWith("3"),
     scalacOptions := stdOptions ++ extraOptions(scalaVersion.value, isDotty.value, optimize = !isSnapshot.value),
     libraryDependencies ++= {
       if (isDotty.value)
         Seq(
-          ("com.github.ghik" % s"silencer-lib_$Scala213" % SilencerVersion % Provided)
-            .withDottyCompat(scalaVersion.value)
+          "com.github.ghik" % s"silencer-lib_$Scala213" % SilencerVersion % Provided
         )
       else
         Seq(
