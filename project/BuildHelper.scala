@@ -24,6 +24,8 @@ object BuildHelper {
   val Scala213: String = versions("2.13")
   val Scala3: String   = versions("3")
 
+  def isScala3 = Def.setting[Boolean] { scalaVersion.value.startsWith("3.") }
+
   val SilencerVersion = "1.7.8"
 
   private val stdOptions = Seq(
@@ -67,20 +69,20 @@ object BuildHelper {
   val dottySettings = Seq(
     crossScalaVersions += Scala3,
     scalacOptions ++= {
-      if (scalaVersion.value == Scala3)
+      if (isScala3.value)
         Seq("-noindent")
       else
         Seq()
     },
     scalacOptions --= {
-      if (scalaVersion.value == Scala3)
+      if (isScala3.value)
         Seq("-Xfatal-warnings")
       else
         Seq()
     },
     Compile / doc / sources := {
       val old = (Compile / doc / sources).value
-      if (scalaVersion.value == Scala3) {
+      if (isScala3.value) {
         Nil
       } else {
         old
@@ -88,7 +90,7 @@ object BuildHelper {
     },
     Test / parallelExecution := {
       val old = (Test / parallelExecution).value
-      if (scalaVersion.value == Scala3) {
+      if (isScala3.value) {
         false
       } else {
         old
@@ -230,7 +232,7 @@ object BuildHelper {
     ThisBuild / scalaVersion := Scala213,
     scalacOptions ++= stdOptions ++ extraOptions(scalaVersion.value, optimize = !isSnapshot.value),
     libraryDependencies ++= {
-      if (scalaVersion.value == Scala3)
+      if (isScala3.value)
         Seq(
           "com.github.ghik" % s"silencer-lib_$Scala213" % SilencerVersion % Provided
         )
@@ -265,7 +267,7 @@ object BuildHelper {
   def macroDefinitionSettings = Seq(
     scalacOptions += "-language:experimental.macros",
     libraryDependencies ++= {
-      if (scalaVersion.value == Scala3) Seq()
+      if (isScala3.value) Seq()
       else
         Seq(
           "org.scala-lang" % "scala-reflect"  % scalaVersion.value % "provided",

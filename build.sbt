@@ -149,7 +149,7 @@ lazy val coreJS = core.js
   .settings(libraryDependencies += "org.scala-js" %%% "scala-js-macrotask-executor" % "1.0.0")
   .settings(
     scalacOptions ++= {
-      if (scalaVersion.value == Scala3) {
+      if (isScala3.value) {
         List()
       } else {
         // Temporarily disable warning to use `MacrotaskExecutor` https://github.com/zio/zio/issues/6308
@@ -190,7 +190,7 @@ lazy val coreTestsJS = coreTests.js
   .settings(dottySettings)
   .settings(
     scalacOptions ++= {
-      if (scalaVersion.value == Scala3) {
+      if (isScala3.value) {
         List()
       } else {
         List("-P:scalajs:nowarnGlobalExecutionContext")
@@ -268,7 +268,7 @@ lazy val streamsTestsJS = streamsTests.js
   .settings(dottySettings)
   .settings(
     scalacOptions ++= {
-      if (scalaVersion.value == Scala3) {
+      if (isScala3.value) {
         List()
       } else {
         List("-P:scalajs:nowarnGlobalExecutionContext")
@@ -330,14 +330,14 @@ lazy val testMagnolia = crossProject(JVMPlatform, JSPlatform)
   .settings(
     crossScalaVersions --= Seq(Scala211),
     scalacOptions ++= {
-      if (scalaVersion.value == Scala3) {
+      if (isScala3.value) {
         Seq.empty
       } else {
         Seq("-language:experimental.macros")
       }
     },
     libraryDependencies ++= {
-      if (scalaVersion.value == Scala3) {
+      if (isScala3.value) {
         Seq.empty
       } else {
         Seq(
