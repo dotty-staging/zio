@@ -320,7 +320,7 @@ object ZHubSpec extends ZIOBaseSpec {
             assert(values2.filter(_ < 0))(isSorted)
         }
       }
-    ),
+    ) @@ TestAspect.flaky,
     suite("unbounded")(
       testM("one to one") {
         checkM(Gen.listOf(smallInt)) { as =>
