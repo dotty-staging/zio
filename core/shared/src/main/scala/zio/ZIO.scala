@@ -2401,7 +2401,7 @@ object ZIO extends ZIOCompanionPlatformSpecific {
     release: A => URIO[R, Any],
     use: A => ZIO[R, E, B]
   ): ZIO[R, E, B] =
-    bracketExit(acquire, new ZIO.BracketReleaseFn(release): (A, Exit[E, B]) => URIO[R, Any], use)
+    bracketExit(acquire, new ZIO.BracketReleaseFn(release): ((A, Exit[E, B]) => URIO[R, Any]), use)
 
   /**
    * Acquires a resource, uses the resource, and then releases the resource.
