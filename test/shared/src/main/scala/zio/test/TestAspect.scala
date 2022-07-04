@@ -26,7 +26,7 @@ import zio.test.environment.{Live, Restorable, TestClock, TestConsole, TestRando
  * an aspect as a polymorphic function, capable of transforming one test into
  * another, possibly enlarging the environment or error type.
  */
-abstract class TestAspect[+LowerR <: UpperR, -UpperR, +LowerE <: UpperE, -UpperE] { self =>
+abstract class TestAspect[+LowerR, -UpperR, +LowerE, -UpperE] { self =>
 
   /**
    * Applies the aspect to some tests in the spec, chosen by the provided
@@ -50,7 +50,7 @@ abstract class TestAspect[+LowerR <: UpperR, -UpperR, +LowerE <: UpperE, -UpperE
    * Returns a new aspect that represents the sequential composition of this
    * aspect with the specified one.
    */
-  final def >>>[LowerR1 >: LowerR <: UpperR1, UpperR1 >: LowerR <: UpperR, LowerE1 >: LowerE <: UpperE1, UpperE1 >: LowerE <: UpperE](
+  final def >>>[LowerR1 >: LowerR, UpperR1 <: UpperR, LowerE1 >: LowerE, UpperE1 <: UpperE](
     that: TestAspect[LowerR1, UpperR1, LowerE1, UpperE1]
   ): TestAspect[LowerR1, UpperR1, LowerE1, UpperE1] =
     new TestAspect[LowerR1, UpperR1, LowerE1, UpperE1] {
@@ -60,7 +60,7 @@ abstract class TestAspect[+LowerR <: UpperR, -UpperR, +LowerE <: UpperE, -UpperE
         that.some(self.some(spec))
     }
 
-  final def andThen[LowerR1 >: LowerR <: UpperR1, UpperR1 >: LowerR <: UpperR, LowerE1 >: LowerE <: UpperE1, UpperE1 >: LowerE <: UpperE](
+  final def andThen[LowerR1 >: LowerR, UpperR1 <: UpperR, LowerE1 >: LowerE, UpperE1 <: UpperE](
     that: TestAspect[LowerR1, UpperR1, LowerE1, UpperE1]
   ): TestAspect[LowerR1, UpperR1, LowerE1, UpperE1] =
     self >>> that
@@ -231,7 +231,7 @@ object TestAspect extends TimeoutVariants {
   /**
    * An aspect that applies the specified aspect on Dotty.
    */
-  def dotty[LowerR <: UpperR, UpperR, LowerE <: UpperE, UpperE](
+  def dotty[LowerR, UpperR, LowerE, UpperE](
     that: TestAspect[LowerR, UpperR, LowerE, UpperE]
   ): TestAspect[LowerR, UpperR, LowerE, UpperE] =
     if (TestVersion.isDotty) that else identity
@@ -438,7 +438,7 @@ object TestAspect extends TimeoutVariants {
   /**
    * An aspect that applies the specified aspect on ScalaJS.
    */
-  def js[LowerR <: UpperR, UpperR, LowerE <: UpperE, UpperE](
+  def js[LowerR, UpperR, LowerE, UpperE](
     that: TestAspect[LowerR, UpperR, LowerE, UpperE]
   ): TestAspect[LowerR, UpperR, LowerE, UpperE] =
     if (TestPlatform.isJS) that else identity
@@ -452,7 +452,7 @@ object TestAspect extends TimeoutVariants {
   /**
    * An aspect that applies the specified aspect on the JVM.
    */
-  def jvm[LowerR <: UpperR, UpperR, LowerE <: UpperE, UpperE](
+  def jvm[LowerR, UpperR, LowerE, UpperE](
     that: TestAspect[LowerR, UpperR, LowerE, UpperE]
   ): TestAspect[LowerR, UpperR, LowerE, UpperE] =
     if (TestPlatform.isJVM) that else identity
@@ -492,7 +492,7 @@ object TestAspect extends TimeoutVariants {
   /**
    * An aspect that applies the specified aspect on ScalaNative.
    */
-  def native[LowerR <: UpperR, UpperR, LowerE <: UpperE, UpperE](
+  def native[LowerR, UpperR, LowerE, UpperE](
     that: TestAspect[LowerR, UpperR, LowerE, UpperE]
   ): TestAspect[LowerR, UpperR, LowerE, UpperE] =
     if (TestPlatform.isNative) that else identity
@@ -724,7 +724,7 @@ object TestAspect extends TimeoutVariants {
   /**
    * An aspect that applies the specified aspect on Scala 2.
    */
-  def scala2[LowerR <: UpperR, UpperR, LowerE <: UpperE, UpperE](
+  def scala2[LowerR, UpperR, LowerE, UpperE](
     that: TestAspect[LowerR, UpperR, LowerE, UpperE]
   ): TestAspect[LowerR, UpperR, LowerE, UpperE] =
     if (TestVersion.isScala2) that else identity
@@ -732,7 +732,7 @@ object TestAspect extends TimeoutVariants {
   /**
    * An aspect that applies the specified aspect on Scala 2.11.
    */
-  def scala211[LowerR <: UpperR, UpperR, LowerE <: UpperE, UpperE](
+  def scala211[LowerR, UpperR, LowerE, UpperE](
     that: TestAspect[LowerR, UpperR, LowerE, UpperE]
   ): TestAspect[LowerR, UpperR, LowerE, UpperE] =
     if (TestVersion.isScala211) that else identity
@@ -740,7 +740,7 @@ object TestAspect extends TimeoutVariants {
   /**
    * An aspect that applies the specified aspect on Scala 2.12.
    */
-  def scala212[LowerR <: UpperR, UpperR, LowerE <: UpperE, UpperE](
+  def scala212[LowerR, UpperR, LowerE, UpperE](
     that: TestAspect[LowerR, UpperR, LowerE, UpperE]
   ): TestAspect[LowerR, UpperR, LowerE, UpperE] =
     if (TestVersion.isScala212) that else identity
@@ -748,7 +748,7 @@ object TestAspect extends TimeoutVariants {
   /**
    * An aspect that applies the specified aspect on Scala 2.13.
    */
-  def scala213[LowerR <: UpperR, UpperR, LowerE <: UpperE, UpperE](
+  def scala213[LowerR, UpperR, LowerE, UpperE](
     that: TestAspect[LowerR, UpperR, LowerE, UpperE]
   ): TestAspect[LowerR, UpperR, LowerE, UpperE] =
     if (TestVersion.isScala213) that else identity
@@ -863,7 +863,7 @@ object TestAspect extends TimeoutVariants {
       test.untraced
   }
 
-  abstract class PerTest[+LowerR <: UpperR, -UpperR, +LowerE <: UpperE, -UpperE] extends TestAspect[LowerR, UpperR, LowerE, UpperE] {
+  abstract class PerTest[+LowerR, -UpperR, +LowerE, -UpperE] extends TestAspect[LowerR, UpperR, LowerE, UpperE] {
 
     def perTest[R >: LowerR <: UpperR, E >: LowerE <: UpperE](
       test: ZIO[R, TestFailure[E], TestSuccess]
