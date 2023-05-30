@@ -195,7 +195,7 @@ class SmartAssertMacros(ctx: Quotes)  {
 
       case Unseal(tree) =>
         val span = tree.span
-       '{TestArrow.succeed($expr).span($span)}
+        '{TestArrow.succeed($expr).span($span)}
     }
 
   def smartAssertSingle_impl(value: Expr[Boolean]): Expr[Assert] = {
