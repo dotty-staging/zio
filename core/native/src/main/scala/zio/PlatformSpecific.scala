@@ -22,7 +22,7 @@ import zio.random.Random
 import zio.system.System
 
 private[zio] trait PlatformSpecific {
-  type ZEnv = Clock with Console with System with Random
+  type ZEnv = ((Clock with Console) with System) with Random
 
   object ZEnv {
 
