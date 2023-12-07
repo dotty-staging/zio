@@ -22,14 +22,14 @@ import zio.{ZEnv, ZLayer}
 
 private[test] abstract class PlatformSpecific {
   type TestEnvironment =
-    Annotations
-      with Live
-      with Sized
-      with TestClock
-      with TestConfig
-      with TestConsole
-      with TestRandom
-      with TestSystem
+    (((((((Annotations
+      with Live)
+      with Sized)
+      with TestClock)
+      with TestConfig)
+      with TestConsole)
+      with TestRandom)
+      with TestSystem)
       with ZEnv
 
   object TestEnvironment {
