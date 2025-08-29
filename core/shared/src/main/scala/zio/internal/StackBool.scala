@@ -31,7 +31,7 @@ private[zio] final class StackBool private () {
     val base = (64L - i0) + index
     val i    = base & 63L
     var ie   = base >> 6
-    var cur  = head
+    var cur: StackBool.Entry | Null = head
 
     while (ie > 0 && (cur ne null)) {
       ie -= 1
@@ -63,7 +63,7 @@ private[zio] final class StackBool private () {
       _size -= 1L
       val index = _size & 0x3fL
 
-      if (index == 63L && head.next != null) head = head.next
+      if (index == 63L && head.next != null) head = head.next.nn
 
       ((1L << index) & head.bits) != 0L
     }
@@ -76,7 +76,7 @@ private[zio] final class StackBool private () {
       val entry =
         if (index == 63L && head.next != null) head.next else head
 
-      ((1L << index) & entry.bits) != 0L
+      ((1L << index) & entry.nn.bits) != 0L
     }
 
   def popDrop[A](a: A): A = { popOrElse(false); a }
@@ -112,7 +112,7 @@ private[zio] object StackBool {
     }
   }
 
-  private class Entry(val next: Entry) {
+  private class Entry(val next: Entry | Null) {
     var bits: Long = 0L
   }
 }

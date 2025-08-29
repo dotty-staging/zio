@@ -19,8 +19,8 @@ package zio.internal
 /**
  * A very fast, growable/shrinkable, mutable stack.
  */
-private[zio] final class Stack[A <: AnyRef]() {
-  private[this] var array   = new Array[AnyRef](13)
+private[zio] final class Stack[A <: AnyRef | Null]() {
+  private[this] var array   = new Array[AnyRef | Null](13)
   private[this] var size    = 0
   private[this] var nesting = 0
 
@@ -52,7 +52,7 @@ private[zio] final class Stack[A <: AnyRef]() {
       val idx = size - 1
       var a   = array(idx)
       if (idx == 0 && nesting > 0) {
-        array = a.asInstanceOf[Array[AnyRef]]
+        array = a.asInstanceOf[Array[AnyRef | Null]]
         a = array(12)
         array(12) = null // GC
         size = 12
@@ -73,7 +73,7 @@ private[zio] final class Stack[A <: AnyRef]() {
     } else {
       val idx = size - 1
       var a   = array(idx)
-      if (idx == 0 && nesting > 0) a = (a.asInstanceOf[Array[AnyRef]])(12)
+      if (idx == 0 && nesting > 0) a = (a.asInstanceOf[Array[AnyRef | Null]])(12)
       a.asInstanceOf[A]
     }
 
@@ -81,8 +81,8 @@ private[zio] final class Stack[A <: AnyRef]() {
 }
 
 private[zio] object Stack {
-  def apply[A <: AnyRef](): Stack[A] = new Stack[A]
-  def apply[A <: AnyRef](a: A): Stack[A] = {
+  def apply[A <: AnyRef | Null](): Stack[A] = new Stack[A]
+  def apply[A <: AnyRef | Null](a: A): Stack[A] = {
     val stack = new Stack[A]
 
     stack.push(a)

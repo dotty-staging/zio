@@ -145,8 +145,8 @@ sealed abstract class Chunk[+A] extends ChunkLike[A] { self =>
     else {
       val leftIterator    = self.arrayIterator
       val rightIterator   = that.arrayIterator
-      var left: Array[A]  = null
-      var right: Array[B] = null
+      var left:  Array[A] | Null = null
+      var right: Array[B] | Null = null
       var leftLength      = 0
       var rightLength     = 0
       var i               = 0
@@ -155,8 +155,8 @@ sealed abstract class Chunk[+A] extends ChunkLike[A] { self =>
       var done            = false
       while (equal && !done) {
         if (i < leftLength && j < rightLength) {
-          val a = left(i)
-          val b = right(j)
+          val a = left.nn(i)
+          val b = right.nn(j)
           if (!f(a, b)) {
             equal = false
           }
@@ -262,8 +262,8 @@ sealed abstract class Chunk[+A] extends ChunkLike[A] { self =>
         else {
           val leftIterator    = self.arrayIterator
           val rightIterator   = that.arrayIterator
-          var left: Array[A]  = null
-          var right: Array[_] = null
+          var left:  Array[A] | Null = null
+          var right: Array[_] | Null = null
           var leftLength      = 0
           var rightLength     = 0
           var i               = 0
@@ -272,8 +272,8 @@ sealed abstract class Chunk[+A] extends ChunkLike[A] { self =>
           var done            = false
           while (equal && !done) {
             if (i < leftLength && j < rightLength) {
-              val a1 = left(i)
-              val a2 = right(j)
+              val a1 = left.nn(i)
+              val a2 = right.nn(j)
               if (a1 != a2) {
                 equal = false
               }
@@ -898,8 +898,8 @@ sealed abstract class Chunk[+A] extends ChunkLike[A] { self =>
       val rightIterator = that.arrayIterator
       val builder       = ChunkBuilder.make[C]()
       builder.sizeHint(length)
-      var leftArray: Array[A]  = null
-      var rightArray: Array[B] = null
+      var leftArray:  Array[A] | Null = null
+      var rightArray: Array[B] | Null = null
       var leftLength           = 0
       var rightLength          = 0
       var i                    = 0
@@ -907,8 +907,8 @@ sealed abstract class Chunk[+A] extends ChunkLike[A] { self =>
       var k                    = 0
       while (i < length) {
         if (j < leftLength && k < rightLength) {
-          val a = leftArray(j)
-          val b = rightArray(k)
+          val a = leftArray.nn(j)
+          val b = rightArray.nn(k)
           val c = both(a, b)
           builder += c
           i += 1
@@ -923,13 +923,13 @@ sealed abstract class Chunk[+A] extends ChunkLike[A] { self =>
           rightLength = rightArray.length
           k = 0
         } else if (j < leftLength) {
-          val a = leftArray(j)
+          val a = leftArray.nn(j)
           val c = left(a)
           builder += c
           i += 1
           j += 1
         } else if (k < rightLength) {
-          val b = rightArray(k)
+          val b = rightArray.nn(k)
           val c = right(b)
           builder += c
           i += 1
@@ -951,8 +951,8 @@ sealed abstract class Chunk[+A] extends ChunkLike[A] { self =>
       val rightIterator = that.arrayIterator
       val builder       = ChunkBuilder.make[C]()
       builder.sizeHint(length)
-      var left: Array[A]  = null
-      var right: Array[B] = null
+      var left:  Array[A] | Null = null
+      var right: Array[B] | Null = null
       var leftLength      = 0
       var rightLength     = 0
       var i               = 0
@@ -960,8 +960,8 @@ sealed abstract class Chunk[+A] extends ChunkLike[A] { self =>
       var k               = 0
       while (i < length) {
         if (j < leftLength && k < rightLength) {
-          val a = left(j)
-          val b = right(k)
+          val a = left.nn(j)
+          val b = right.nn(k)
           val c = f(a, b)
           builder += c
           i += 1

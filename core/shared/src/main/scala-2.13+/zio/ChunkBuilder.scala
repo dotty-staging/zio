@@ -45,45 +45,45 @@ object ChunkBuilder {
    */
   def make[A](): ChunkBuilder[A] =
     new ChunkBuilder[A] {
-      var arrayBuilder: ArrayBuilder[A] = null
+      var arrayBuilder: ArrayBuilder[A] | Null = null
       var size: SInt                    = -1
       def addOne(a: A): this.type = {
         if (arrayBuilder eq null) {
           implicit val tag = Chunk.Tags.fromValue(a)
           arrayBuilder = ArrayBuilder.make
           if (size != -1) {
-            arrayBuilder.sizeHint(size)
+            arrayBuilder.nn.sizeHint(size)
           }
         }
         try {
-          arrayBuilder.addOne(a)
+          arrayBuilder.nn.addOne(a)
         } catch {
           case _: ClassCastException =>
-            val as = arrayBuilder.result()
+            val as = arrayBuilder.nn.result()
             arrayBuilder = ArrayBuilder.make[AnyRef].asInstanceOf[ArrayBuilder[A]]
             if (size != -1) {
-              arrayBuilder.sizeHint(size)
+              arrayBuilder.nn.sizeHint(size)
             }
-            arrayBuilder.addAll(as)
-            arrayBuilder.addOne(a)
+            arrayBuilder.nn.addAll(as)
+            arrayBuilder.nn.addOne(a)
         }
         this
       }
       def clear(): Unit =
         if (arrayBuilder ne null) {
-          arrayBuilder.clear()
+          arrayBuilder.nn.clear()
         }
       def result(): Chunk[A] =
         if (arrayBuilder eq null) {
           Chunk.empty
         } else {
-          Chunk.fromArray(arrayBuilder.result())
+          Chunk.fromArray(arrayBuilder.nn.result())
         }
       override def sizeHint(n: SInt): Unit =
         if (arrayBuilder eq null) {
           size = n
         } else {
-          arrayBuilder.sizeHint(n)
+          arrayBuilder.nn.sizeHint(n)
         }
     }
 

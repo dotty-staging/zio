@@ -168,7 +168,7 @@ class ZTestJUnitRunner(klass: Class[_]) extends Runner with Filterable with Boot
       label: String,
       path: Vector[String],
       renderedText: String,
-      throwable: Throwable = null
+      throwable: Throwable | Null = null
     ): UIO[Unit] =
       effectTotal {
         notifier.fireTestFailure(
@@ -190,7 +190,7 @@ class ZTestJUnitRunner(klass: Class[_]) extends Runner with Filterable with Boot
   }
 }
 
-private[junit] class TestFailed(message: String, cause: Throwable = null)
+private[junit] class TestFailed(message: String, cause: Throwable | Null = null)
     extends Throwable(message, cause, false, false)
 
 @RunWith(classOf[ZTestJUnitRunner])

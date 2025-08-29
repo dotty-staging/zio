@@ -2250,7 +2250,7 @@ object ZIOSpec extends ZIOBaseSpec {
         assertM(io.sandbox.flip)(equalTo(expectedCause))
       } @@ zioTag(errors),
       testM("finalizer errors reported") {
-        @volatile var reported: Exit[Nothing, Int] = null
+        @volatile var reported: Exit[Nothing, Int] | Null = null
 
         val io = IO
           .succeed[Int](42)
@@ -2260,7 +2260,7 @@ object ZIOSpec extends ZIOBaseSpec {
 
         for {
           a1 <- assertM(io)(anything)
-          a2  = assert(reported.succeeded)(isFalse)
+          a2  = assert(reported.nn.succeeded)(isFalse)
         } yield a1 && a2
       } @@ zioTag(errors),
       testM("bracket exit is usage result") {
@@ -3781,7 +3781,7 @@ object ZIOSpec extends ZIOBaseSpec {
         }
       },
       testM("promise ugly path test") {
-        val func: String => String = s => s.toUpperCase
+        val func: (String | Null) => String = s => s.nn.toUpperCase
         for {
           promise <- ZIO.succeed(scala.concurrent.Promise[String]())
           _ <- ZIO.effect {

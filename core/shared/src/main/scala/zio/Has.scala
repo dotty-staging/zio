@@ -51,7 +51,7 @@ final class Has[A] private (
   def size: Int = map.size
 }
 object Has {
-  private val TaggedAnyRef: Tag[AnyRef] = implicitly[Tag[AnyRef]]
+  private val TaggedAnyRef: Tag[AnyRef | Null] = implicitly[Tag[AnyRef | Null]]
 
   type MustHave[A, B] = A <:< Has[B]
 
@@ -227,7 +227,7 @@ object Has {
   /**
    * Constructs a new environment holding the single service.
    */
-  def apply[A: Tag](a: A): Has[A] = new Has[AnyRef](Map(), Map(taggedTagType(TaggedAnyRef) -> (()))).add(a)
+  def apply[A: Tag](a: A): Has[A] = new Has[AnyRef | Null](Map(), Map(taggedTagType(TaggedAnyRef) -> (()))).add(a)
 
   /**
    * Constructs a new environment holding the specified services.

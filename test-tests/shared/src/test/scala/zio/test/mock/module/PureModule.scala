@@ -13,7 +13,7 @@ object PureModule {
   final class NotAnyKind[A](private val dummy: Boolean = false) extends AnyVal
   object NotAnyKind {
     // for some reason a ClassTag search is required, an arbitrary type like Set[A] doesn't fix inference
-    implicit def notAnyKind[A](implicit maybeClassTag: ClassTag[A] = null): NotAnyKind[A] =
+    implicit def notAnyKind[A](implicit maybeClassTag: ClassTag[A] = null.asInstanceOf[ClassTag[A]]): NotAnyKind[A] =
       new NotAnyKind[A]
   }
 

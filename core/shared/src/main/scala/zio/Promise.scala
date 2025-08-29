@@ -203,7 +203,7 @@ final class Promise[E, A] private (
 
   private[zio] def unsafeDone(io: IO[E, A]): Unit = {
     var retry: Boolean                 = true
-    var joiners: List[IO[E, A] => Any] = null
+    var joiners: List[IO[E, A] => Any] | Null = null
 
     while (retry) {
       val oldState = state.get
@@ -218,7 +218,7 @@ final class Promise[E, A] private (
       retry = !state.compareAndSet(oldState, newState)
     }
 
-    if (joiners ne null) joiners.reverse.foreach(_(io))
+    if (joiners ne null) joiners.nn.reverse.foreach(_(io))
   }
 
 }

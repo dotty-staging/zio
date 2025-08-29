@@ -70,7 +70,7 @@ private[zio] final class FiberContext[E, A](
 
   private[this] var currentExecutor = startExec
 
-  var scopeKey: ZScope.Key = null
+  var scopeKey: ZScope.Key | Null = null
 
   private[this] val tracingStatus =
     if (traceExec || traceStack) StackBool()
@@ -110,17 +110,17 @@ private[zio] final class FiberContext[E, A](
 
   @noinline
   private[this] def addTrace(lambda: AnyRef): Unit =
-    execTrace.put(traceLocation(lambda))
+    execTrace.nn.put(traceLocation(lambda))
 
   @noinline private[this] def pushContinuation(k: Any => IO[Any, Any]): Unit = {
-    if (traceStack && inTracingRegion) stackTrace.put(traceLocation(k))
+    if (traceStack && inTracingRegion) stackTrace.nn.put(traceLocation(k))
     stack.push(k)
   }
 
   private[this] def popStackTrace(): Unit =
-    stackTrace.dropLast()
+    stackTrace.nn.dropLast()
 
-  private[this] def captureTrace(lastStack: ZTraceElement): ZTrace = {
+  private[this] def captureTrace(lastStack: ZTraceElement | Null): ZTrace = {
     val exec = if (execTrace ne null) execTrace.toReversedList else Nil
     val stack = {
       val stack0 = if (stackTrace ne null) stackTrace.toReversedList else Nil
@@ -164,7 +164,7 @@ private[zio] final class FiberContext[E, A](
   private[this] object TracingRegionExit extends Function[Any, IO[E, Any]] {
     def apply(v: Any): IO[E, Any] = {
       // don't use effectTotal to avoid TracingRegionExit appearing in execution trace twice with traceEffects=true
-      tracingStatus.popDrop(())
+      tracingStatus.nn.popDrop(())
 
       ZIO.succeedNow(v)
     }
@@ -187,7 +187,7 @@ private[zio] final class FiberContext[E, A](
 
         case TracingRegionExit =>
           // do not remove TracingRegionExit from stack trace as it was not added
-          tracingStatus.popDrop(())
+          tracingStatus.nn.popDrop(())
 
         case fold: ZIO.Fold[_, _, _, _, _] if !shouldInterrupt() =>
           // Push error handler back onto the stack and halt iteration:
@@ -277,7 +277,7 @@ private[zio] final class FiberContext[E, A](
     try {
       // Do NOT accidentally capture `curZio` in a closure, or Scala will wrap
       // it in `ObjectRef` and performance will plummet.
-      var curZio: IO[E, Any] = io0
+      var curZio: IO[E, Any] | Null = io0
 
       // Put the stack reference on the stack:
       val stack = this.stack
@@ -287,9 +287,9 @@ private[zio] final class FiberContext[E, A](
 
       // Store the trace of the immediate future flatMap during evaluation
       // of a 1-hop left bind, to show a stack trace closer to the point of failure
-      var fastPathFlatMapContinuationTrace: ZTraceElement = null
+      var fastPathFlatMapContinuationTrace: ZTraceElement | Null = null
 
-      @noinline def fastPathTrace(k: Any => ZIO[Any, E, Any], effect: AnyRef): ZTraceElement =
+      @noinline def fastPathTrace(k: Any => ZIO[Any, E, Any], effect: AnyRef): ZTraceElement | Null =
         if (inTracingRegion) {
           val kTrace = traceLocation(k)
 
@@ -352,7 +352,7 @@ private[zio] final class FiberContext[E, A](
                         // delete continuation as it was "popped" after success
                         if (traceStack && (kTrace ne null)) fastPathFlatMapContinuationTrace = null
                         // record continuation in exec as we're just "passing" it
-                        if (traceExec && (kTrace ne null)) execTrace.put(kTrace)
+                        if (traceExec && (kTrace ne null)) execTrace.nn.put(kTrace)
 
                         curZio = k(value)
 
@@ -374,7 +374,7 @@ private[zio] final class FiberContext[E, A](
                           // delete continuation as it was "popped" after success
                           if (traceStack && (kTrace ne null)) fastPathFlatMapContinuationTrace = null
                           // record continuation in exec as we're just "passing" it
-                          if (traceExec && (kTrace ne null)) execTrace.put(kTrace)
+                          if (traceExec && (kTrace ne null)) execTrace.nn.put(kTrace)
 
                           curZio = k(value)
                         } else {
@@ -845,7 +845,7 @@ private[zio] final class FiberContext[E, A](
   def trace: UIO[ZTrace] = UIO(captureTrace(null))
 
   @tailrec
-  private[this] def enterAsync(epoch: Long, register: AnyRef, blockingOn: List[Fiber.Id]): IO[E, Any] = {
+  private[this] def enterAsync(epoch: Long, register: AnyRef, blockingOn: List[Fiber.Id]): IO[E, Any] | Null = {
     val oldState = state.get
 
     oldState match {
@@ -912,7 +912,7 @@ private[zio] final class FiberContext[E, A](
     }
 
   @inline
-  private[this] def nextInstr(value: Any): IO[E, Any] =
+  private[this] def nextInstr(value: Any): IO[E, Any] | Null =
     if (!stack.isEmpty) {
       val k = stack.pop()
 
@@ -943,7 +943,7 @@ private[zio] final class FiberContext[E, A](
   }
 
   @tailrec
-  private[this] def done(v: Exit[E, A]): IO[E, Any] = {
+  private[this] def done(v: Exit[E, A]): IO[E, Any] | Null = {
     val oldState = state.get
 
     oldState match {
@@ -1050,7 +1050,7 @@ private[zio] final class FiberContext[E, A](
     }
 
   @tailrec
-  private def register0(k: Callback[Nothing, Exit[E, A]]): Exit[E, A] = {
+  private def register0(k: Callback[Nothing, Exit[E, A]]): Exit[E, A] | Null = {
     val oldState = state.get
 
     oldState match {

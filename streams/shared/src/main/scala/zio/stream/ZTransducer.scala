@@ -806,10 +806,10 @@ object ZTransducer extends ZTransducerPlatformSpecificConstructors {
             }
           case Some(inputChunk: Chunk[A]) =>
             state.modify { s0 =>
-              var out: mutable.ArrayBuffer[Chunk[A]] = null
-              var chunkIndex                         = 0
-              var buffer: Chunk[A]                   = s0._1.getOrElse(Chunk.empty)
-              var delimIndex                         = s0._2
+              var out: mutable.ArrayBuffer[Chunk[A]] | Null = null
+              var chunkIndex                                = 0
+              var buffer: Chunk[A]                          = s0._1.getOrElse(Chunk.empty)
+              var delimIndex                                = s0._2
               while (chunkIndex < inputChunk.length) {
                 val in    = buffer :+ inputChunk(chunkIndex)
                 var index = buffer.length

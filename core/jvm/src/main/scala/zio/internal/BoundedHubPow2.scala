@@ -24,7 +24,7 @@ import java.util.concurrent.atomic._
  * A bounded hub with capacity equal to a power of two backed by an array.
  */
 private final class BoundedHubPow2[A](requestedCapacity: Int) extends Hub[A] {
-  private[this] val array            = Array.ofDim[AnyRef](requestedCapacity)
+  private[this] val array            = Array.ofDim[AnyRef | Null](requestedCapacity)
   private[this] val mask             = requestedCapacity - 1
   private[this] val seq              = new AtomicIntegerArray(requestedCapacity)
   private[this] val sliding          = new AtomicIntegerArray(requestedCapacity)

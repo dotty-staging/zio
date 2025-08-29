@@ -215,7 +215,7 @@ object ZScope {
 
     private[zio] def unsafeClosed(): Boolean = Sync(self)(exitValue.get() != null)
 
-    private[zio] def unsafeClose(a0: A): UIO[Any] =
+    private[zio] def unsafeClose(a0: A): UIO[Any] | Null =
       Sync(self) {
         exitValue.compareAndSet(null.asInstanceOf[A], a0)
 
@@ -277,7 +277,7 @@ object ZScope {
             }
         }
 
-    private[zio] def unsafeRelease(): UIO[Unit] =
+    private[zio] def unsafeRelease(): UIO[Unit] | Null =
       Sync(self) {
         if (references.decrementAndGet() == 0) {
           val totalSize = weakFinalizers.size() + strongFinalizers.size()

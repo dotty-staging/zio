@@ -24,7 +24,7 @@ import java.util.concurrent.atomic._
  * A bounded hub of arbitrary capacity backed by an array.
  */
 private final class BoundedHubArb[A](requestedCapacity: Int) extends Hub[A] {
-  private[this] val array            = Array.ofDim[AnyRef](requestedCapacity)
+  private[this] val array            = Array.ofDim[AnyRef | Null](requestedCapacity)
   private[this] val seq              = new AtomicLongArray(requestedCapacity)
   private[this] val sliding          = new AtomicLongArray(requestedCapacity)
   private[this] val state            = new AtomicReference(BoundedHubArb.State(0L, 0))

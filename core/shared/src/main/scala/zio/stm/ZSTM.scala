@@ -961,7 +961,7 @@ final class ZSTM[-R, +E, +A] private[stm] (
     val stackSize = new AtomicLong()
     val stack     = new Stack[Cont]()
     var current   = self.asInstanceOf[ZSTM[R, Any, Any]]
-    var result    = null: TExit[Any, Any]
+    var result    = null: TExit[Any, Any] | Null
 
     while (result eq null) {
       try {
@@ -1850,7 +1850,7 @@ object ZSTM {
     }
 
     def tryCommitAsync[R, E, A](
-      journal: Journal,
+      journal: Journal | Null,
       platform: Platform,
       fiberId: Fiber.Id,
       stm: ZSTM[R, E, A],

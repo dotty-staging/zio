@@ -56,7 +56,7 @@ package object console {
           IO.effect {
             val line = StdIn.readLine()
 
-            if (line ne null) line
+            if (line != null) line
             else throw new EOFException("There is no more input left to read")
           }.refineToOrDie[IOException]
       }

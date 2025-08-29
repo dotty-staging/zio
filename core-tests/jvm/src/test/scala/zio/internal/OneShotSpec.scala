@@ -16,7 +16,7 @@ object OneShotSpec extends ZIOBaseSpec {
           assert(oneShot.get())(equalTo(1))
         },
         test("set must not accept a null value") {
-          val oneShot = OneShot.make[Object]
+          val oneShot = OneShot.make[Object | Null]
 
           assert(oneShot.set(null))(throwsA[Error])
         },

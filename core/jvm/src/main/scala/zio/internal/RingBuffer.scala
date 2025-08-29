@@ -152,7 +152,7 @@ object RingBuffer {
 abstract class RingBuffer[A](override final val capacity: Int) extends MutableQueueFieldsPadding[A] with Serializable {
   import RingBuffer.{STATE_EMPTY, STATE_FULL, STATE_LOOP, STATE_RESERVED}
 
-  private val buf: Array[AnyRef]   = new Array[AnyRef](capacity)
+  private val buf: Array[AnyRef | Null]   = new Array[AnyRef | Null](capacity)
   private val seq: AtomicLongArray = new AtomicLongArray(capacity)
   0.until(capacity).foreach(i => seq.set(i, i.toLong))
 

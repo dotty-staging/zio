@@ -19,12 +19,12 @@ package zio.internal
 import zio.Chunk
 
 private[zio] final class SingleThreadedRingBuffer[A](capacity: Int) {
-  private[this] val array   = new Array[AnyRef](capacity)
+  private[this] val array   = new Array[AnyRef | Null](capacity)
   private[this] var size    = 0
   private[this] var current = 0
 
   def put(value: A): Unit = {
-    array(current) = value.asInstanceOf[AnyRef]
+    array(current) = value.asInstanceOf[AnyRef | Null]
     increment()
   }
 
@@ -58,9 +58,9 @@ private[zio] final class SingleThreadedRingBuffer[A](capacity: Int) {
     arrayToReversedList(newArray).asInstanceOf[List[A]]
   }
 
-  @inline private[this] def arrayToReversedList(array: Array[AnyRef]): List[AnyRef] = {
+  @inline private[this] def arrayToReversedList(array: Array[AnyRef | Null]): List[AnyRef | Null] = {
     var i                    = 0
-    var result: List[AnyRef] = Nil
+    var result: List[AnyRef | Null] = Nil
     while (i < array.length) {
       result ::= array(i)
       i += 1
